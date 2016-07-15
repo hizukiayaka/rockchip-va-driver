@@ -12,8 +12,8 @@
 #include "enccommon.h"
 #include "vp8encapi.h"
 #include "vp8instance.h"
-#include "libvpu/rk_vepu_debug.h"
-#include "libvpu/vp8_enc/vpu_mem.h"
+#include "rk_vepu_debug.h"
+#include "vpu_mem.h"
 
 /* Value for parameter to use API default */
 #define DEFAULT -100

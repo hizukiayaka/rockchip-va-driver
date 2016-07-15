@@ -7,7 +7,7 @@
 #define _RK_VP8ENCAPI_H_
 
 #include "vp8encapi.h"
-#include "libvpu/rk_vepu_interface.h"
+#include "rk_vepu_interface.h"
 
 enum VP8E_PRIVATE_DATA_TYPE {
   VP8E_PRIVATE_DATA_TYPE_END,

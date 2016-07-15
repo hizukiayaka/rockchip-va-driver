@@ -18,7 +18,7 @@
 #include <memory.h>
 
 #include "vp8quanttable.h"
-#include "libvpu/rk_vepu_debug.h"
+#include "rk_vepu_debug.h"
 
 #define DIV(a, b)               (((a) + (SIGN(a) * (b)) / 2) / (b))
 #define DSCY                    64 /* n * 64 */

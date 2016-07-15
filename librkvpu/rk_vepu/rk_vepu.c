@@ -3,7 +3,7 @@
  * found in the LICENSE file.
  */
 
-#include "libvpu/rk_vepu_interface.h"
+#include "rk_vepu_interface.h"
 
 #include <assert.h>
 #include <stdbool.h>
@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "libvpu/rk_vepu_debug.h"
+#include "rk_vepu_debug.h"
 #include "vp8_enc/rk_vp8encapi.h"
 
 void *rk_vepu_init(struct rk_vepu_init_param *param) {

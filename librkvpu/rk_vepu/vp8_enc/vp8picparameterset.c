@@ -20,7 +20,7 @@
 #include <memory.h>
 
 #include "enccommon.h"
-#include "libvpu/rk_vepu_debug.h"
+#include "rk_vepu_debug.h"
 
 int32_t PicParameterSetAlloc(ppss* ppss) {
   ppss->size = 1;

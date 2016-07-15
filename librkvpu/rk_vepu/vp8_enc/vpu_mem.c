@@ -8,7 +8,7 @@
 #include <malloc.h>
 #include <memory.h>
 
-#include "libvpu/rk_vepu_debug.h"
+#include "rk_vepu_debug.h"
 
 int32_t VPUMallocLinear(VPUMemLinear_t* p, uint32_t size) {
   p->vir_addr = (uint32_t*) calloc(1, size);

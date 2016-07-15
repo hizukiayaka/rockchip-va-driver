@@ -1,6 +1,5 @@
-/* Copyright 2014 The Chromium OS Authors. All rights reserved.
- * Use of this source code is governed by a BSD-style license that can be
- * found in the LICENSE file.
+/* Copyright 2016 Rockchip Corporation. All Rights Reserved.
+ * The orignal code comes from Chromium OS
  */
 
 #include <assert.h>
@@ -14,10 +13,8 @@
 #include <string.h>
 #include <sys/queue.h>
 #include <sys/syscall.h>
-#include "config.h"  /* For HAVE_VISIBILITY */
-#include "libv4l-plugin.h"
-#include "libvpu/rk_vepu_debug.h"
-#include "libvpu/rk_vepu_interface.h"
+#include "rk_vepu_debug.h"
+#include "rk_vepu_interface.h"
 
 #define VLOG(log_level, str, ...) ((g_log_level >= log_level) ?			\
 	(void) fprintf(stderr, "%s: " str "\n", __func__, ##__VA_ARGS__)	\
@@ -36,12 +33,6 @@
 			errno);							\
 	ret;									\
 	})
-
-#if HAVE_VISIBILITY
-#define PLUGIN_PUBLIC __attribute__ ((__visibility__("default")))
-#else
-#define PLUGIN_PUBLIC
-#endif
 
 #define RK3288_VPU_NAME "rk3288-vpu-enc"
 #define DEFAULT_FRAME_RATE 30
@@ -112,9 +103,9 @@ struct encoder_context {
 	struct v4l2_ext_control v4l2_ctrls[MAX_NUM_GET_CONFIG_CTRLS];
 };
 
-static void *plugin_init(int fd);
-static void plugin_close(void *dev_ops_priv);
-static int plugin_ioctl(void *dev_ops_priv, int fd, unsigned long int cmd,
+static void *rk_v4l2_init(int fd);
+static void rk_v4l2_close(void *dev_ops_priv);
+static int rk_v4l2_ioctl(void *dev_ops_priv, int fd, unsigned long int cmd,
 		void *arg);
 
 /* Functions to handle various ioctl. */
@@ -163,7 +154,7 @@ static const char *v4l_cmd2str(unsigned long int cmd);
 static void get_log_level();
 static pthread_once_t g_get_log_level_once = PTHREAD_ONCE_INIT;
 
-static void *plugin_init(int fd)
+static void *rk_v4l2_init(int fd)
 {
 	int ret;
 	struct v4l2_query_ext_ctrl ext_ctrl;
@@ -204,11 +195,11 @@ static void *plugin_init(int fd)
 	return ctx;
 
 fail:
-	plugin_close(ctx);
+	rk_v4l2_close(ctx);
 	return NULL;
 }
 
-static void plugin_close(void *dev_ops_priv)
+static void rk_v4l2_close(void *dev_ops_priv)
 {
 	struct encoder_context *ctx = (struct encoder_context *)dev_ops_priv;
 
@@ -227,7 +218,7 @@ static void plugin_close(void *dev_ops_priv)
 	free(ctx);
 }
 
-static int plugin_ioctl(void *dev_ops_priv, int fd,
+static int rk_v4l2_ioctl(void *dev_ops_priv, int fd,
 			unsigned long int cmd, void *arg)
 {
 	int ret;
@@ -709,9 +700,3 @@ static const char* v4l_cmd2str(unsigned long int cmd)
 		return "UNKNOWN";
 	}
 }
-
-PLUGIN_PUBLIC const struct libv4l_dev_ops libv4l2_plugin = {
-	.init = &plugin_init,
-	.close = &plugin_close,
-	.ioctl = &plugin_ioctl,
-};

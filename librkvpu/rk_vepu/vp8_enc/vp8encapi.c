@@ -18,7 +18,7 @@
 #include <stdio.h>
 
 #include "vp8encapi.h"
-#include "libvpu/rk_vepu_debug.h"
+#include "rk_vepu_debug.h"
 
 #include "enccommon.h"
 #include "vp8codeframe.h"

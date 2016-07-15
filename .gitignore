@@ -31,3 +31,9 @@ TAGS
 /debian.upstream/changelog
 /debian.upstream/control
 /debian.upstream/libva-vdpau-driver.install
+CMakeFiles
+CMakeCache.txt
+*\.so
+*\.a
+cmake_install.cmake
+install_manifest.txt
