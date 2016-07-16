@@ -11,13 +11,13 @@
 #include <sys/stat.h>
 #include <sys/mman.h>
 #include <linux/media.h>
-
 #include "v4l2_utils.h"
+#include "v4l2_calls.h"
 
 #define PRINT(fmt, args...) \
     printf("%s[%d] " fmt "\n", __func__, __LINE__, ## args)
 
-#define IOCTL(type, arg) plugin_ioctl(ctx->enc, ctx->fd, type, arg)
+#define IOCTL(type, arg) rk_v4l2_ioctl(ctx->enc, ctx->fd, type, arg)
 
 #define IOCTL_OR_ERROR_RETURN_VALUE(type, arg, value, type_str) \
     do {                                                        \
@@ -50,15 +50,15 @@ enc_context_p v4l2_init(const char *device_path) {
         goto failed_ctx;
     ctx->fd = fd;
 
-    ctx->enc = plugin_init(ctx->fd);
+    ctx->enc = rk_v4l2_init(ctx->fd);
     if (!ctx->enc)
-        goto failed_plugin;
+        goto failed_rk_v4l2;
 
     return ctx;
 
 failed_ctx:
     close(ctx->fd);
-failed_plugin:
+failed_rk_v4l2:
     free(ctx);
 
     return NULL;
@@ -118,7 +118,7 @@ int v4l2_deinit(enc_context_p ctx) {
     reqbufs.memory = V4L2_MEMORY_MMAP;
     IOCTL_OR_ERROR_RETURN(VIDIOC_REQBUFS, &reqbufs);
 
-    plugin_close(ctx->enc);
+    rk_v4l2_close(ctx->enc);
     close(ctx->fd);
     free(ctx);
 

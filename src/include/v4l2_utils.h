@@ -26,7 +26,6 @@
 #define V4l2_UTILS_H
 
 #include "linux/videodev2.h"
-#include "rk_vepu_plugin.h"
 
 typedef struct enc_context {
     void *enc;

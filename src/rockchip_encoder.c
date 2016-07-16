@@ -23,6 +23,7 @@
  */
 
 #include "rockchip_drv_video.h"
+#include "v4l2_calls.h"
 
 #define DEV_NAME_RK3288_NEW     "rockchip-vpu-enc"
 #define DEV_NAME_RK3288_LEGACY  "rk3288-vpu-enc"

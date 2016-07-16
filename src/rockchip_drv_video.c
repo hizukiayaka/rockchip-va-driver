@@ -27,7 +27,7 @@
  */
 
 #include "rockchip_drv_video.h"
-
+#include "config.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
@@ -567,7 +567,7 @@ VAStatus rockchip_Terminate( VADriverContextP ctx )
     return VA_STATUS_SUCCESS;
 }
 
-EXPORT VAStatus __vaDriverInit_0_32(VADriverContextP ctx)
+VAStatus __vaDriverInit_0_32(VADriverContextP ctx)
 {
     struct VADriverVTable * const vtable = ctx->vtable;
     int result;
@@ -648,7 +648,7 @@ EXPORT VAStatus __vaDriverInit_0_32(VADriverContextP ctx)
     return VA_STATUS_SUCCESS;
 }
 
-EXPORT VAStatus VA_DRIVER_INIT_FUNC(  VADriverContextP ctx )
+VAStatus VA_DRIVER_INIT_FUNC(  VADriverContextP ctx )
 {
     return __vaDriverInit_0_32(ctx);
 }

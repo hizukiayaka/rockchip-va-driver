@@ -4,7 +4,6 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <linux/videodev2.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <stdbool.h>
@@ -107,11 +106,6 @@ struct encoder_context {
 	struct v4l2_ext_control v4l2_ctrls[MAX_NUM_GET_CONFIG_CTRLS];
 };
 
-static void *rk_v4l2_init(int fd);
-static void rk_v4l2_close(void *dev_ops_priv);
-static int rk_v4l2_ioctl(void *dev_ops_priv, int fd, unsigned long int cmd,
-		void *arg);
-
 /* Functions to handle various ioctl. */
 static int ioctl_streamon_locked(
 	struct encoder_context *ctx, int fd, enum v4l2_buf_type *type);
@@ -158,7 +152,7 @@ static const char *v4l_cmd2str(unsigned long int cmd);
 static void get_log_level();
 static pthread_once_t g_get_log_level_once = PTHREAD_ONCE_INIT;
 
-static void *rk_v4l2_init(int fd)
+void *rk_v4l2_init(int fd)
 {
 	int ret;
 	struct v4l2_query_ext_ctrl ext_ctrl;
@@ -203,7 +197,7 @@ fail:
 	return NULL;
 }
 
-static void rk_v4l2_close(void *dev_ops_priv)
+void rk_v4l2_close(void *dev_ops_priv)
 {
 	struct encoder_context *ctx = (struct encoder_context *)dev_ops_priv;
 
@@ -222,7 +216,7 @@ static void rk_v4l2_close(void *dev_ops_priv)
 	free(ctx);
 }
 
-static int rk_v4l2_ioctl(void *dev_ops_priv, int fd,
+int rk_v4l2_ioctl(void *dev_ops_priv, int fd,
 			unsigned long int cmd, void *arg)
 {
 	int ret;
