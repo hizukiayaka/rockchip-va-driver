@@ -25,4 +25,12 @@ extern int g_log_level;
 	(void) fprintf(stderr, "ERR, %s:%d: " fmt, __func__, __LINE__, ## args)	\
 		: (void) 0)
 
+#define VPU_PLG_ENTER() ((g_log_level >= 2) ?				\
+	(void) fprintf(stderr, "%s:%d: enter\n", __func__, __LINE__)    \
+		: (void) 0)
+
+#define VPU_PLG_LEAVE() ((g_log_level >= 2) ?				\
+	(void) fprintf(stderr, "%s:%d: leave\n", __func__, __LINE__)    \
+		: (void) 0)
+
 #endif

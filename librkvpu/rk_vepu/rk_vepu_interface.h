@@ -17,15 +17,25 @@
 #include <stddef.h>
 #include <stdint.h>
 
-/* TODO(wuchengli): Remove these after the header is updated. */
 #define V4L2_CID_CUSTOM_BASE               (V4L2_CID_USER_BASE | 0x1000)
-#define V4L2_CID_PRIVATE_RK3288_HEADER     (V4L2_CID_CUSTOM_BASE)
-#define V4L2_CID_PRIVATE_RK3288_REG_PARAMS (V4L2_CID_CUSTOM_BASE + 1)
-#define V4L2_CID_PRIVATE_RK3288_HW_PARAMS  (V4L2_CID_CUSTOM_BASE + 2)
-#define V4L2_CID_PRIVATE_RK3288_GET_PARAMS (V4L2_CID_CUSTOM_BASE + 3)
+#define V4L2_CID_PRIVATE_ROCKCHIP_HEADER     (V4L2_CID_CUSTOM_BASE)
+#define V4L2_CID_PRIVATE_ROCKCHIP_REG_PARAMS (V4L2_CID_CUSTOM_BASE + 1)
+#define V4L2_CID_PRIVATE_ROCKCHIP_HW_PARAMS  (V4L2_CID_CUSTOM_BASE + 2)
+#define V4L2_CID_PRIVATE_ROCKCHIP_RET_PARAMS (V4L2_CID_CUSTOM_BASE + 3)
+#define V4L2_CID_PRIVATE_ROCKCHIP_VAENC_SPS (V4L2_CID_CUSTOM_BASE + 4)
+#define V4L2_CID_PRIVATE_ROCKCHIP_VAENC_PPS (V4L2_CID_CUSTOM_BASE + 5)
+#define V4L2_CID_PRIVATE_ROCKCHIP_VAENC_SLICE (V4L2_CID_CUSTOM_BASE + 6)
+#define V4L2_CID_PRIVATE_ROCKCHIP_VAENC_RC (V4L2_CID_CUSTOM_BASE + 7)
 
 /* The maximum number of controls returned by rk_vepu_get_config(). */
 #define MAX_NUM_GET_CONFIG_CTRLS 5
+
+enum parm_id {
+	VENC_PARAM_H264_SPS,
+	VENC_PARAM_H264_PPS,
+	VENC_PARAM_H264_SLICE,
+	VENC_PARAM_RATE_CONTROL
+};
 
 struct rk_vepu_init_param {
   uint32_t width; /* video width */
@@ -39,6 +49,11 @@ struct rk_vepu_runtime_param {
   int32_t framerate_denom;
   int32_t bitrate; /* bits per second */
   bool keyframe_request; /* have keyframe request */
+
+  int32_t intra_period;
+  int32_t initial_qp;
+  int32_t min_qp;
+  int32_t frame_skip;
 };
 
 /**

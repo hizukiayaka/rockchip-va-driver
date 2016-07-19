@@ -13,8 +13,12 @@
 #include <string.h>
 #include <sys/queue.h>
 #include <sys/syscall.h>
+#include <va/va.h>
+#include <va/va_enc_h264.h>
+#include "linux/videodev2.h"
 #include "rk_vepu_debug.h"
 #include "rk_vepu_interface.h"
+#include "v4l2_calls.h"
 
 #define VLOG(log_level, str, ...) ((g_log_level >= log_level) ?			\
 	(void) fprintf(stderr, "%s: " str "\n", __func__, ##__VA_ARGS__)	\
@@ -83,7 +87,7 @@ struct pending_buffer_queue {
  *		when the parameters to pass together with the source buffer are
  *		ready; those params are received on dequeing the previous
  *		destination buffer.
- * @get_param_payload:	Payload of V4L2_CID_PRIVATE_RK3288_GET_PARAMS. This is
+ * @get_param_payload:	Payload of V4L2_CID_PRIVATE_ROCKCHIP_RET_PARAMS. This is
  *			used to update the encoder configuration by
  *			rk_vepu_update_config().
  * @get_param_payload_size:	The size of get_param_payload.
@@ -177,7 +181,7 @@ static void *rk_v4l2_init(int fd)
 	queue_init(&ctx->pending_buffers);
 
 	memset(&ext_ctrl, 0, sizeof(ext_ctrl));
-	ext_ctrl.id = V4L2_CID_PRIVATE_RK3288_GET_PARAMS;
+	ext_ctrl.id = V4L2_CID_PRIVATE_ROCKCHIP_RET_PARAMS;
 	ret = SYS_IOCTL(fd, VIDIOC_QUERY_EXT_CTRL, &ext_ctrl);
 	if (ret) {
 		goto fail;
@@ -362,7 +366,7 @@ static int ioctl_dqbuf_locked(struct encoder_context *ctx, int fd,
 	/* Get the encoder configuration and update the library. */
 	memset(ctx->get_param_payload, 0, ctx->get_param_payload_size);
 	memset(&v4l2_ctrl, 0, sizeof(v4l2_ctrl));
-	v4l2_ctrl.id = V4L2_CID_PRIVATE_RK3288_GET_PARAMS;
+	v4l2_ctrl.id = V4L2_CID_PRIVATE_ROCKCHIP_RET_PARAMS;
 	v4l2_ctrl.size = ctx->get_param_payload_size;
 	v4l2_ctrl.ptr = ctx->get_param_payload;
 	memset(&ext_ctrls, 0, sizeof(ext_ctrls));
@@ -410,12 +414,42 @@ static int ioctl_s_ext_ctrls_locked(struct encoder_context *ctx, int fd,
 	 */
 	for (i = 0; i < ext_ctrls->count; i++) {
 		switch (ext_ctrls->controls[i].id) {
-		case V4L2_CID_MPEG_VIDEO_FORCE_KEY_FRAME:
-			runtime_param_ptr->keyframe_request = true;
+		case V4L2_CID_MPEG_MFC51_VIDEO_FORCE_FRAME_TYPE:
+			if (ext_ctrls->controls[i].value ==
+					V4L2_MPEG_MFC51_VIDEO_FORCE_FRAME_TYPE_I_FRAME)
+				runtime_param_ptr->keyframe_request = true;
 			break;
 		case V4L2_CID_MPEG_VIDEO_BITRATE:
 			runtime_param_ptr->bitrate = ext_ctrls->controls[i].value;
 			break;
+		case V4L2_CID_PRIVATE_ROCKCHIP_VAENC_SPS: {
+			VAEncSequenceParameterBufferH264 *sps = NULL;
+			sps = ext_ctrls->controls[i].ptr;
+			runtime_param_ptr->bitrate = sps->bits_per_second;
+			runtime_param_ptr->intra_period = sps->intra_period;
+			break;
+		}
+		case V4L2_CID_PRIVATE_ROCKCHIP_VAENC_PPS: {
+			VAEncPictureParameterBufferH264 *pp = NULL;
+			pp = ext_ctrls->controls[i].ptr;
+			break;
+		}
+		case V4L2_CID_PRIVATE_ROCKCHIP_VAENC_SLICE: {
+			VAEncSliceParameterBufferH264 *slice = NULL;
+			slice = ext_ctrls->controls[i].ptr;
+			break;
+		}
+		case V4L2_CID_PRIVATE_ROCKCHIP_VAENC_RC: {
+			VAEncMiscParameterRateControl *rc = NULL;
+			rc = ext_ctrls->controls[i].ptr;
+			runtime_param_ptr->bitrate =
+				rc->bits_per_second * rc->target_percentage / 100;
+			runtime_param_ptr->initial_qp = rc->initial_qp;
+			runtime_param_ptr->min_qp = rc->min_qp;
+			runtime_param_ptr->frame_skip =
+				!rc->rc_flags.bits.disable_frame_skip;
+			break;
+		}
 		default:
 			break;
 		}
