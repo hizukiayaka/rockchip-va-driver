@@ -11,8 +11,11 @@ vp8_enc/vp8entropy.c vp8_enc/vp8header.c vp8_enc/vp8init.c
 vp8_enc/vp8macroblocktools.c vp8_enc/vp8picparameterset.c
 vp8_enc/vp8picturebuffer.c vp8_enc/vp8putbits.c
 vp8_enc/vp8ratecontrol.c vp8_enc/vpu_mem.c
+h264e/h264e.c h264e/h264e_mad.c
+h264e/h264e_rate_control.c
 )
 
 TARGET_INCLUDE_DIRECTORIES(rkvepu PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"
 "${CMAKE_CURRENT_SOURCE_DIR}/vp8_enc"
+"${CMAKE_CURRENT_SOURCE_DIR}/h264e"
 )
