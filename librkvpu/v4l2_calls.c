@@ -37,7 +37,8 @@
 	ret;									\
 	})
 
-#define RK3288_VPU_NAME "rockchip-vpu-enc"
+/* Max 16 char with terminator included */
+#define RK3288_VPU_NAME "rockchip-vpu-en"
 #define DEFAULT_FRAME_RATE 30
 #define DEFAULT_BITRATE 1000000
 #define PENDING_BUFFER_QUEUE_SIZE VIDEO_MAX_FRAME
